@@ -66,4 +66,21 @@ fetch('https://randomuser.me/api/')
   const animationList = await getData('https://yts.mx/api/v2/list_movies.json?genre=animation');
   
   console.log(actionList, dramaList, animationList);
+
+  const $actionContainer = document.getElementById('action');
+  const $dramaContainer = document.getElementById('drama');
+  const $animationContainer = document.getElementById('animation');
+
+  const $featuringContainer = document.getElementById('featuring');
+  const $form = document.getElementById('form');
+  const $home = document.getElementById('home');
+
+  const $modal = document.getElementById('modal');
+  const $overlay = document.getElementById('overlay');
+  const $hideModal = document.getElementById('hide-modal');
+
+  const $modalImg = $modal.querySelector('img');
+  const $modalTitle = $modal.querySelector('h1');
+  const $modalDescription = $modal.querySelector('p');
+
 })();

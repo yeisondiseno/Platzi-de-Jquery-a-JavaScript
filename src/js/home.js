@@ -64,8 +64,26 @@ fetch('https://randomuser.me/api/')
   const actionList = await getData('https://yts.mx/api/v2/list_movies.json?genre=action');
   const dramaList = await getData('https://yts.mx/api/v2/list_movies.json?genre=drama');
   const animationList = await getData('https://yts.mx/api/v2/list_movies.json?genre=animation');
-  
-  console.log(actionList, dramaList, animationList);
+  //console.log(actionList, dramaList, animationList);
+
+  function videoItemTemaplate(movie) {
+    return (
+      `<div class="primaryPlaylistItem">
+        <div class="primaryPlaylistItem-image">
+          <img src="${movie.medium_cover_image}">
+        </div>
+        <h4 class="primaryPlaylistItem-title">
+          ${movie.title}
+        </h4>
+      </div>`
+    )
+  };
+
+  actionList.data.movies.forEach((movie) => {
+    
+    const HTMLString = videoItemTemaplate(movie);
+    console.log(HTMLString);
+  });
 
   const $actionContainer = document.getElementById('action');
   const $dramaContainer = document.getElementById('drama');
@@ -82,5 +100,10 @@ fetch('https://randomuser.me/api/')
   const $modalImg = $modal.querySelector('img');
   const $modalTitle = $modal.querySelector('h1');
   const $modalDescription = $modal.querySelector('p');
+
+
+
+
+  //console.log(videoItemTemaplate('src/images/covers/bitcoin.jpg', 'Bitcoin'));
 
 })();

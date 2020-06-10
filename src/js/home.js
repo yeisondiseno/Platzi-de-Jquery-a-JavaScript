@@ -40,7 +40,6 @@ Promise.race([
 
 
 // obtener datos de una api
-
 fetch('https://randomuser.me/api/')
   .then( (response) => {
     console.log(response);
@@ -61,10 +60,16 @@ fetch('https://randomuser.me/api/')
     return data;
   }
 
+  const $form = document.getElementById('form');
+
+  $form.addEventListener('submit', (evento) => {
+    event.preventDefault();
+    
+  })
+
   const actionList = await getData('https://yts.mx/api/v2/list_movies.json?genre=action');
   const dramaList = await getData('https://yts.mx/api/v2/list_movies.json?genre=drama');
   const animationList = await getData('https://yts.mx/api/v2/list_movies.json?genre=animation');
-  //console.log(actionList, dramaList, animationList);
 
   function videoItemTemaplate(movie) {
     return (
@@ -79,18 +84,33 @@ fetch('https://randomuser.me/api/')
     )
   };
 
-  actionList.data.movies.forEach((movie) => {
-    
-    const HTMLString = videoItemTemaplate(movie);
-    console.log(HTMLString);
-  });
+  function createTemplate(HTMLString){
+    const html = document.implementation.createHTMLDocument();
+    html.body.innerHTML = HTMLString;
+    return html.body.children[0];
+  }
+
+  function addEventClick($element){
+    $element.addEventListener('click', function(){
+      alert($element);
+    });
+  }
+
+  function renderMovieList(list, $container){
+    $container.querySelector('img').remove();
+    list.data.movies.forEach((movie) => {
+      const HTMLString = videoItemTemaplate(movie);
+      const movieElement = createTemplate(HTMLString);
+      $container.append(movieElement);
+      addEventClick(movieElement);
+    });
+  }
 
   const $actionContainer = document.getElementById('action');
   const $dramaContainer = document.getElementById('drama');
   const $animationContainer = document.getElementById('animation');
 
   const $featuringContainer = document.getElementById('featuring');
-  const $form = document.getElementById('form');
   const $home = document.getElementById('home');
 
   const $modal = document.getElementById('modal');
@@ -102,8 +122,8 @@ fetch('https://randomuser.me/api/')
   const $modalDescription = $modal.querySelector('p');
 
 
-
-
-  //console.log(videoItemTemaplate('src/images/covers/bitcoin.jpg', 'Bitcoin'));
+  renderMovieList(actionList ,$actionContainer);
+  renderMovieList(dramaList, $dramaContainer);
+  renderMovieList(animationList, $animationContainer);
 
 })();

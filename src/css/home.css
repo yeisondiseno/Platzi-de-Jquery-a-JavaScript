@@ -221,10 +221,11 @@ body {
 .featuring {
   background: linear-gradient(to right, #ff0000, #ff458b);
   display: flex;
-  height: 100%;
+  height: fit-content;
   align-items: center;
-  padding-left: 100px;
+  padding: 0;
   color: white;
+  margin-top: auto;
 }
 
 .featuring-image {

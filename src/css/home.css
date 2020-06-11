@@ -8,6 +8,7 @@ body {
 .home {
   display: grid;
   height: 100vh;
+  overflow-y: hidden;
   grid-template-columns: 350px 1fr;
   grid-template-rows: 1fr 0;
   grid-template-areas: "sidebar primary"

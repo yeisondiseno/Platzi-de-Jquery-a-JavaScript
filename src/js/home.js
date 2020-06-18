@@ -63,14 +63,57 @@ fetch('https://randomuser.me/api/')
   const $form = document.getElementById('form');
   const $home = document.getElementById('home');
 
-  $form.addEventListener('submit', (evento) => {
+  const $featuringContainer = document.getElementById('featuring');
+
+  function setAttributes($element, attributes){
+    for (const attribute in attributes){
+      $element.setAttribute(attribute, attributes[attribute]);
+    }
+  }
+
+  const BASE_API = 'https://yts.mx/api/v2/list_movies.json?';
+  
+  function featuringTemplate(peli){
+    return(
+       `
+        <div class="featuring">
+          <div class="featuring-image">
+            <img src="${peli.medium_cover_image}" 
+                width="auto" 
+                height="100" 
+                alt="" 
+                style="margin-bottom: -3px;">
+          </div>
+          <div class="featuring-content">
+            <p class="featuring-title">Pelicula encontrada</p>
+            <p class="featuring-album">${peli.title}</p>
+          </div>
+        </div>
+       `
+    )
+  }
+
+  $form.addEventListener('submit', async (evento) => {
     event.preventDefault();
     $home.classList.add('search-active');
+    const $loader = document.createElement('img');
+    setAttributes($loader, {
+      src: 'src/images/loader.gif',
+      width: 50,
+      height: 50,
+    });
+    $featuringContainer.append($loader);
+
+    const data = new FormData($form);
+    const peli = await getData(`${BASE_API}limit=1&query_term=${data.get('name')}`);
+    const HTMLString = featuringTemplate(peli.data.movies[0]);
+    debugger
+    $featuringContainer.innerHTML = HTMLString;
   });
 
-  const actionList = await getData('https://yts.mx/api/v2/list_movies.json?genre=action');
-  const dramaList = await getData('https://yts.mx/api/v2/list_movies.json?genre=drama');
-  const animationList = await getData('https://yts.mx/api/v2/list_movies.json?genre=animation');
+  const actionList = await getData(`${BASE_API}genre=action`);
+  const dramaList = await getData(`${BASE_API}genre=drama`);
+  const animationList = await getData(`${BASE_API}genre=animation`);
 
   function videoItemTemaplate(movie) {
     return (
@@ -111,8 +154,6 @@ fetch('https://randomuser.me/api/')
   const $actionContainer = document.getElementById('action');
   const $dramaContainer = document.getElementById('drama');
   const $animationContainer = document.getElementById('animation');
-
-  const $featuringContainer = document.getElementById('featuring');
 
   const $modal = document.getElementById('modal');
   const $overlay = document.getElementById('overlay');

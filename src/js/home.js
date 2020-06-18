@@ -105,8 +105,12 @@ fetch('https://randomuser.me/api/')
     $featuringContainer.append($loader);
 
     const data = new FormData($form);
-    const peli = await getData(`${BASE_API}limit=1&query_term=${data.get('name')}`);
-    const HTMLString = featuringTemplate(peli.data.movies[0]);
+    const {
+      data: {
+        movies: peli
+      }
+    } = await getData(`${BASE_API}limit=1&query_term=${data.get('name')}`);
+    const HTMLString = featuringTemplate(peli[0]);
     debugger
     $featuringContainer.innerHTML = HTMLString;
   });

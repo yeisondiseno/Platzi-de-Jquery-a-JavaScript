@@ -111,7 +111,6 @@ fetch('https://randomuser.me/api/')
       }
     } = await getData(`${BASE_API}limit=1&query_term=${data.get('name')}`);
     const HTMLString = featuringTemplate(peli[0]);
-    debugger
     $featuringContainer.innerHTML = HTMLString;
   });
 
@@ -119,9 +118,9 @@ fetch('https://randomuser.me/api/')
   const dramaList = await getData(`${BASE_API}genre=drama`);
   const animationList = await getData(`${BASE_API}genre=animation`);
 
-  function videoItemTemaplate(movie) {
+  function videoItemTemaplate(movie, category) {
     return (
-      `<div class="primaryPlaylistItem">
+      `<div class="primaryPlaylistItem" data-id="${movie.id}" data-category="${category}">
         <div class="primaryPlaylistItem-image">
           <img src="${movie.medium_cover_image}">
         </div>
@@ -141,14 +140,14 @@ fetch('https://randomuser.me/api/')
   function addEventClick($element){
     $element.addEventListener('click', function(){
       //alert($element);
-      shoModal();
+      shoModal($element);
     });
   }
 
-  function renderMovieList(list, $container){
+  function renderMovieList(list, $container, category){
     $container.querySelector('img').remove();
     list.data.movies.forEach((movie) => {
-      const HTMLString = videoItemTemaplate(movie);
+      const HTMLString = videoItemTemaplate(movie, category);
       const movieElement = createTemplate(HTMLString);
       $container.append(movieElement);
       addEventClick(movieElement);
@@ -167,9 +166,11 @@ fetch('https://randomuser.me/api/')
   const $modalTitle = $modal.querySelector('h1');
   const $modalDescription = $modal.querySelector('p');
 
-  function shoModal(){
+  function shoModal($element){
     $overlay.classList.add('active');
     $modal.style.animation = 'modalIn 0.8s forwards';
+    const idElement = $element.dataset.id;
+    const categoryElement = $element.dataset.category;
   }
   
   $hideModal.addEventListener('click', hideModal);
@@ -179,8 +180,8 @@ fetch('https://randomuser.me/api/')
   }
 
 
-  renderMovieList(actionList ,$actionContainer);
-  renderMovieList(dramaList, $dramaContainer);
-  renderMovieList(animationList, $animationContainer);
+  renderMovieList(actionList ,$actionContainer, 'action');
+  renderMovieList(dramaList, $dramaContainer, 'drama');
+  renderMovieList(animationList, $animationContainer, 'animation');
 
 })();

@@ -76,6 +76,7 @@
 }
 .modal-content p {
   align-self: center;
+  text-align: left;
 }
 /*@keyframes animationIn {*/
 @keyframes modalIn {

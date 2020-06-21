@@ -114,9 +114,9 @@ fetch('https://randomuser.me/api/')
     $featuringContainer.innerHTML = HTMLString;
   });
 
-  const actionList = await getData(`${BASE_API}genre=action`);
-  const dramaList = await getData(`${BASE_API}genre=drama`);
-  const animationList = await getData(`${BASE_API}genre=animation`);
+  const { data: { movies: actionList } } = await getData(`${BASE_API}genre=action`);
+  const { data: { movies: dramaList } } = await getData(`${BASE_API}genre=drama`);
+  const { data: { movies: animationList } } = await getData(`${BASE_API}genre=animation`);
 
   function videoItemTemaplate(movie, category) {
     return (
@@ -146,7 +146,7 @@ fetch('https://randomuser.me/api/')
 
   function renderMovieList(list, $container, category){
     $container.querySelector('img').remove();
-    list.data.movies.forEach((movie) => {
+    list.forEach((movie) => {
       const HTMLString = videoItemTemaplate(movie, category);
       const movieElement = createTemplate(HTMLString);
       $container.append(movieElement);
@@ -166,11 +166,40 @@ fetch('https://randomuser.me/api/')
   const $modalTitle = $modal.querySelector('h1');
   const $modalDescription = $modal.querySelector('p');
 
+
+  function findById(list, id){
+    return list.find( (movie) => movie.id === parseInt(id, 10))
+    //return list.find( movie => movie.id === parseInt(id, 10))  este puede ser 
+    // for ( let i = 0; i < list.length; i++ ){
+    //   if (list[i].id === parseInt(id, 10)) {
+    //     return list[i];
+    //   }
+    // }
+  }
+
+  function findMovie(id, category){
+    switch (category){
+      case 'action': {
+        return findById(actionList, id);
+      }
+      case 'drama': {
+        return findById(dramaList, id);
+      }
+      default: {
+        return findById(animationList, id);
+      }
+    }
+  }
+
   function shoModal($element){
     $overlay.classList.add('active');
     $modal.style.animation = 'modalIn 0.8s forwards';
     const idElement = $element.dataset.id;
     const categoryElement = $element.dataset.category;
+    const data = findMovie(idElement, categoryElement);
+    $modalImg.setAttribute('src', data.medium_cover_image);
+    $modalTitle.textContent = data.title;
+    $modalDescription.textContent = data.description_full;
   }
   
   $hideModal.addEventListener('click', hideModal);

@@ -1,4 +1,4 @@
-console.log('hola mundo!');
+// console.log('hola mundo!');
 
 const getuserAll = new Promise(function(todoBien, todoMal){
   // llamar a un api, siguientes intervals
@@ -57,13 +57,18 @@ fetch('https://randomuser.me/api/')
   async function getData(url){
     const response = await fetch(url);
     const data = await response.json();
-    return data;
+    if (data.data.movie_count > 0){
+      return data;
+    } else{
+      throw new Error('No se encontró ningun resultado');
+    }
   }
 
   const $form = document.getElementById('form');
   const $home = document.getElementById('home');
-
+  const $friends = document.getElementById('playlistFriends');
   const $featuringContainer = document.getElementById('featuring');
+  const $playList = document.getElementById('myPlaylist');
 
   function setAttributes($element, attributes){
     for (const attribute in attributes){
@@ -72,7 +77,68 @@ fetch('https://randomuser.me/api/')
   }
 
   const BASE_API = 'https://yts.mx/api/v2/list_movies.json?';
+
+  function friendTemplate(friend) {
+    return (
+      `
+        <li class="playlistFriends-item fadeIn">
+          <a href="#">
+            <img src="${friend.results[0].picture.medium}" alt="echame la culpa" />
+            <span>
+              ${friend.results[0].name.first} ${friend.results[0].name.last}
+            </span>
+          </a>
+        </li>
+      `
+    )
+  }
   
+  async function getFriend(){
+    async function crateListFriend() {
+      const friend = await fetch('https://randomuser.me/api/');
+      const friendsData = await friend.json();
+      const friendHTML = friendTemplate(friendsData);
+      return friendHTML;
+    }
+    async function ListFriends() {
+      let list = '';
+      for ( var i = 0; i < 8 ; i++ ){
+        const friend = await crateListFriend();
+        const listOfFriend = list;
+        list = friend + listOfFriend;
+      }
+      return list;
+    }
+    const friendListOfList = await ListFriends();
+    $friends.innerHTML = friendListOfList;
+  }
+
+  function listTemplate(t){
+    return(
+      `
+        <li class="myPlaylist-item fadeIn">
+          <a href="#">
+            <span>
+              ${t.title}
+            </span>
+          </a>
+        </li>
+      `
+    )
+  }
+
+  async function renderMyPlayList(l){
+    const list = await l;
+    let listOfList = ''; 
+    for( var i = 0; i < 9; i++){
+      const listListed = await listTemplate(list[i]);
+      const countList = listOfList;
+      listOfList = listListed + countList;
+    }
+    $playList.innerHTML = listOfList;
+  }
+
+
   function featuringTemplate(peli){
     return(
        `
@@ -93,6 +159,9 @@ fetch('https://randomuser.me/api/')
     )
   }
 
+
+
+
   $form.addEventListener('submit', async (evento) => {
     event.preventDefault();
     $home.classList.add('search-active');
@@ -105,18 +174,17 @@ fetch('https://randomuser.me/api/')
     $featuringContainer.append($loader);
 
     const data = new FormData($form);
-    const {
-      data: {
-        movies: peli
-      }
-    } = await getData(`${BASE_API}limit=1&query_term=${data.get('name')}`);
+    try{
+      const { data: { movies: peli } } = await getData(`${BASE_API}limit=1&query_term=${data.get('name')}`);
+    } catch(error){
+      alert(error.message);
+      $loader.remove;
+      $home.classList.remove('search-active');
+    }
     const HTMLString = featuringTemplate(peli[0]);
     $featuringContainer.innerHTML = HTMLString;
   });
 
-  const { data: { movies: actionList } } = await getData(`${BASE_API}genre=action`);
-  const { data: { movies: dramaList } } = await getData(`${BASE_API}genre=drama`);
-  const { data: { movies: animationList } } = await getData(`${BASE_API}genre=animation`);
 
   function videoItemTemaplate(movie, category) {
     return (
@@ -150,9 +218,14 @@ fetch('https://randomuser.me/api/')
       const HTMLString = videoItemTemaplate(movie, category);
       const movieElement = createTemplate(HTMLString);
       $container.append(movieElement);
+      const movieImg = movieElement.querySelector('img');
+      movieImg.addEventListener('load', () => {
+        movieImg.classList.add('fadeIn');
+      })
       addEventClick(movieElement);
     });
   }
+
 
   const $actionContainer = document.getElementById('action');
   const $dramaContainer = document.getElementById('drama');
@@ -193,7 +266,7 @@ fetch('https://randomuser.me/api/')
 
   function shoModal($element){
     $overlay.classList.add('active');
-    $modal.style.animation = 'modalIn 0.8s forwards';
+    $modal.style.animation = 'modalIn 0.4s forwards';
     const idElement = $element.dataset.id;
     const categoryElement = $element.dataset.category;
     const data = findMovie(idElement, categoryElement);
@@ -209,8 +282,17 @@ fetch('https://randomuser.me/api/')
   }
 
 
-  renderMovieList(actionList ,$actionContainer, 'action');
+  const { data: { movies: actionList } } = await getData(`${BASE_API}genre=action`);
+  renderMovieList(actionList, $actionContainer, 'action');
+  const { data: { movies: dramaList } } = await getData(`${BASE_API}genre=drama`);
   renderMovieList(dramaList, $dramaContainer, 'drama');
+  const { data: { movies: animationList } } = await getData(`${BASE_API}genre=animation`);
   renderMovieList(animationList, $animationContainer, 'animation');
 
+  const { data: { movies: dataMovieList} }= await getData(`${BASE_API}`);
+  renderMyPlayList(dataMovieList);
+  console.log('Nueva lista',dataMovieList)
+
+  getFriend();
+ 
 })();

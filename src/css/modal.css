@@ -24,7 +24,9 @@
 }
 .overlay {
   background: rgba(0,0,0,.5);
-  position: fixed;
+  position: absolute;
+  height: 100vh;
+  width: 100vw;
   left: 0;
   right: 0;
   top: 0;
@@ -44,7 +46,7 @@
 }
 .modal {
 
-  width: 500px;
+  width: 700px;
   background: white;
   padding: 2em;
   border-radius: .5em;
@@ -83,15 +85,6 @@
   0% {
     transform: translateY(-3000px);
   }
-  60% {
-    transform: translateY(25px);
-  }
-  75% {
-    transform: translateY(-10px);
-  }
-  90% {
-    transform: translateY(5px);
-  }
   100% {
     transform: translateY(0px);
   }
@@ -101,12 +94,6 @@
 @keyframes modalOut {
   0% {
     transform: translateY(5px);
-  }
-  60% {
-    transform: translateY(-10px);
-  }
-  75% {
-    transform: translateY(25px);
   }
   100% {
     transform: translateY(-3000px);

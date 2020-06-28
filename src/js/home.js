@@ -70,6 +70,18 @@ fetch('https://randomuser.me/api/')
   const $featuringContainer = document.getElementById('featuring');
   const $playList = document.getElementById('myPlaylist');
 
+  const $actionContainer = document.getElementById('action');
+  const $dramaContainer = document.getElementById('drama');
+  const $animationContainer = document.getElementById('animation');
+
+  const $modal = document.getElementById('modal');
+  const $overlay = document.getElementById('overlay');
+  const $hideModal = document.getElementById('hide-modal');
+
+  const $modalImg = $modal.querySelector('img');
+  const $modalTitle = $modal.querySelector('h1');
+  const $modalDescription = $modal.querySelector('p');
+
   function setAttributes($element, attributes){
     for (const attribute in attributes){
       $element.setAttribute(attribute, attributes[attribute]);
@@ -110,6 +122,7 @@ fetch('https://randomuser.me/api/')
       return list;
     }
     const friendListOfList = await ListFriends();
+    localStorage.setItem('friendListOfList', JSON.stringify(friendListOfList));
     $friends.innerHTML = friendListOfList;
   }
 
@@ -227,19 +240,6 @@ fetch('https://randomuser.me/api/')
   }
 
 
-  const $actionContainer = document.getElementById('action');
-  const $dramaContainer = document.getElementById('drama');
-  const $animationContainer = document.getElementById('animation');
-
-  const $modal = document.getElementById('modal');
-  const $overlay = document.getElementById('overlay');
-  const $hideModal = document.getElementById('hide-modal');
-
-  const $modalImg = $modal.querySelector('img');
-  const $modalTitle = $modal.querySelector('h1');
-  const $modalDescription = $modal.querySelector('p');
-
-
   function findById(list, id){
     return list.find( (movie) => movie.id === parseInt(id, 10))
     //return list.find( movie => movie.id === parseInt(id, 10))  este puede ser 
@@ -283,15 +283,20 @@ fetch('https://randomuser.me/api/')
 
 
   const { data: { movies: actionList } } = await getData(`${BASE_API}genre=action`);
+  localStorage.setItem('actionList', JSON.stringify(actionList));
   renderMovieList(actionList, $actionContainer, 'action');
+
   const { data: { movies: dramaList } } = await getData(`${BASE_API}genre=drama`);
+  localStorage.setItem('dramaList', JSON.stringify(dramaList));
   renderMovieList(dramaList, $dramaContainer, 'drama');
+
   const { data: { movies: animationList } } = await getData(`${BASE_API}genre=animation`);
+  localStorage.setItem('animationList', JSON.stringify(animationList));
   renderMovieList(animationList, $animationContainer, 'animation');
 
   const { data: { movies: dataMovieList} }= await getData(`${BASE_API}`);
+  localStorage.setItem('dataMovieList', JSON.stringify(dataMovieList));
   renderMyPlayList(dataMovieList);
-  console.log('Nueva lista',dataMovieList)
 
   getFriend();
  

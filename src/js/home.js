@@ -121,8 +121,21 @@ fetch('https://randomuser.me/api/')
       }
       return list;
     }
-    const friendListOfList = await ListFriends();
-    localStorage.setItem('friendListOfList', JSON.stringify(friendListOfList));
+    async function cacheListFriens(friendListOfList) {
+      const listName = `${friendListOfList}`;
+      const cacheList = window.localStorage.getItem(listName);
+      if (cacheList) {
+        return cacheList;
+      } else {
+        const data = await ListFriends();
+        localStorage.setItem('friendListOfList', data);
+        return data;
+      }
+    }
+    // const listoFriendCache = data;
+    const friendListOfList = await cacheListFriens('friendListOfList');
+    // const friendListOfList = await ListFriends();
+    // localStorage.setItem('friendListOfList', friendListOfList);
     $friends.innerHTML = friendListOfList;
   }
 
@@ -208,7 +221,8 @@ fetch('https://randomuser.me/api/')
         <h4 class="primaryPlaylistItem-title">
           ${movie.title}
         </h4>
-      </div>`
+      </div>
+      `
     )
   };
 
@@ -281,21 +295,33 @@ fetch('https://randomuser.me/api/')
     $modal.style.animation = 'modalOut 0.8s forwards';
   }
 
+  async function cacheExist(category, genre) {
+    const listName = `${category}`;
+    const cacheList = window.localStorage.getItem(listName);
+    if (cacheList){
+      return JSON.parse(cacheList);
+    } else{
+      const { data: { movies: data } } = await getData(`${BASE_API}genre=${genre}`);
+      localStorage.setItem(listName, JSON.stringify(data));
+      return data;
+    }
+  }
+  
 
-  const { data: { movies: actionList } } = await getData(`${BASE_API}genre=action`);
-  localStorage.setItem('actionList', JSON.stringify(actionList));
+  // const { data: { movies: actionList } } = await getData(`${BASE_API}genre=action`);
+  const actionList = await cacheExist('actionList', 'action');
   renderMovieList(actionList, $actionContainer, 'action');
 
-  const { data: { movies: dramaList } } = await getData(`${BASE_API}genre=drama`);
-  localStorage.setItem('dramaList', JSON.stringify(dramaList));
+  const dramaList = await cacheExist('dramaList', 'drama');
+  // localStorage.setItem('dramaList', JSON.stringify(dramaList));
   renderMovieList(dramaList, $dramaContainer, 'drama');
 
-  const { data: { movies: animationList } } = await getData(`${BASE_API}genre=animation`);
-  localStorage.setItem('animationList', JSON.stringify(animationList));
+  const animationList = await cacheExist('animationList', 'animation');
+  // localStorage.setItem('animationList', JSON.stringify(animationList));
   renderMovieList(animationList, $animationContainer, 'animation');
 
-  const { data: { movies: dataMovieList} }= await getData(`${BASE_API}`);
-  localStorage.setItem('dataMovieList', JSON.stringify(dataMovieList));
+  const dataMovieList = await cacheExist('dataMovieList', '');
+  // localStorage.setItem('dataMovieList', JSON.stringify(dataMovieList));
   renderMyPlayList(dataMovieList);
 
   getFriend();
